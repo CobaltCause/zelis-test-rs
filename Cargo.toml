@@ -82,3 +82,7 @@ edition = "2021"
 
 [lints]
 workspace = true
+
+[dependencies]
+clap = { version = "4.5.7", features = ["derive", "wrap_help"] }
+either = "1.12.0"
