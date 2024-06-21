@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+env:
+  # Required to make things output color
+  TERM: ansi
+
+jobs:
+  ci:
+    name: CI
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Sync repository
+        uses: actions/checkout@v4
+
+      - name: Uninstall obstructive tools
+        run: rm -rf "$HOME/.rustup" "$HOME/.cargo"
+
+      - name: Install Lix (with flakes and nix-command enabled)
+        uses: DeterminateSystems/nix-installer-action@v12
+        with:
+          source-url: https://install.lix.systems/lix/lix-installer-x86_64-linux
+
+          extra-conf: |
+            # Add the `nix-community` cachix to speed up things that leverage it
+            extra-substituters = https://nix-community.cachix.org
+            extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
+
+      - name: Pop/push Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@v7
+
+      - name: Configure `nix-direnv`
+        run: |
+          echo 'source $HOME/.nix-profile/share/nix-direnv/direnvrc' > "$HOME/.direnvrc"
+
+      - name: Install `direnv` and `nix-direnv`
+        run: |
+          nix profile install nixpkgs#direnv nixpkgs#nix-direnv --inputs-from .
+
+      - name: Pop/push downloaded crate cache
+        uses: actions/cache@v4
+        with:
+          key: downloaded-crates
+          path: ~/.cargo
+
+      - name: Pop/push compiled crate cache
+        uses: actions/cache@v4
+        with:
+          key: compiled-crates-${{runner.os}}
+          path: target
+
+      # Do this to shorten the logs for the real CI step
+      - name: Populate `/nix/store`
+        run: nix develop --command true
+
+      - name: Perform continuous integration
+        run: |
+          direnv allow
+          direnv exec . engage
