@@ -1,1 +1,8 @@
-/target
+# Cargo artifacts
+target
+
+# Direnv cache
+/.direnv
+
+# Nix artifacts
+/result*
