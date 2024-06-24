@@ -11,7 +11,15 @@ You are given a large JSON file, ````data/test.json````. The file has been deliv
 
 Create a new repository implementing your solution. When complete, share with ````@jgmartin```` and ````@waysidekoi```` for review. Thanks and good luck!
 
-## Results
+## Post-optimization results
+
+I am now bottlenecked on my SSD's read speed, which is around 7200MB/s. For
+details, see the following commits:
+
+* [3d1881fe](https://github.com/CobaltCause/zelis-test-rs/commit/3d1881fe9ed6bbdbe0a727f5112268dfa85ff136)
+* [54e0e1b3](https://github.com/CobaltCause/zelis-test-rs/commit/54e0e1b386bfe840351feb4e3d53cdabc3183eae)
+
+## Pre-optimization results
 
 ### `time`
 
