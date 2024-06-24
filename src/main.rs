@@ -110,11 +110,11 @@ where
     I: Read,
     O: Write,
 {
-    let mut output = BufWriter::new(SwapByteWriter {
-        inner: output,
+    let mut output = SwapByteWriter {
+        inner: BufWriter::new(output),
         input: b';',
         output: b':',
-    });
+    };
 
     io::copy(&mut input, &mut output)
 }
