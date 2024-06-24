@@ -86,6 +86,13 @@ where
     T: Write,
 {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        // Take a shortcut if no replacements are necessary, which is
+        // overwhelmingly the case. This results in an absolutely massive
+        // performance improvement.
+        if !buf.contains(&self.input) {
+            return self.inner.write(buf);
+        }
+
         for &byte in buf {
             if byte == self.input {
                 self.inner.write_all(&[self.output])?;
